@@ -27,6 +27,7 @@ jobs:
       with:
         login-server: ${{ secrets.AZURE_CONTAINER_REGISTRY_LOGIN_SERVER }}
         username: ${{ secrets.AZURE_CONTAINER_REGISTRY_USERNAME }}
+        password: ${{ secret.Azure_container_REGISTRY_PASSWORD }}
 
     - name: Docker build image
       run: |
@@ -37,7 +38,3 @@ jobs:
          docker push ${{ secrets.AZURE_CONTAINER_REGISTRY_LOGIN_SERVER }}/myapp:latest
          
          
-       
-       
-     
-     
