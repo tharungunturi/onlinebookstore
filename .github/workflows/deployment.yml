@@ -6,6 +6,10 @@ on:
   pull_request:
     branches: [ "J2EE" ]
 
+env :
+    secrets.AZURE_CONTAINER_REGISTRY_LOGIN_SERVER : "azurecontainer1.azurecr.io"
+
+
 jobs:
   build:
 
@@ -27,7 +31,7 @@ jobs:
       with:
         login-server: ${{ secrets.AZURE_CONTAINER_REGISTRY_LOGIN_SERVER }}
         username: ${{ secrets.AZURE_CONTAINER_REGISTRY_USERNAME }}
-        password: ${{ secrets.Azure_container_REGISTRY_PASSWORD }}
+        password: ${{ secret.Azure_container_REGISTRY_PASSWORD }}
 
     - name: Docker build image
       run: |
