@@ -9,6 +9,7 @@ on:
 env :
     secrets.AZURE_CONTAINER_REGISTRY_LOGIN_SERVER : "azurecontainer1.azurecr.io"
 
+
 jobs:
   build:
 
@@ -26,11 +27,14 @@ jobs:
       run: mvn -B package --file pom.xml
 
     - name: log in to azure container Registry
-      uses: azure/docker-login@v1
+      uses: azure/login@v1
       with:
         login-server: ${{ secrets.AZURE_CONTAINER_REGISTRY_LOGIN_SERVER }}
         username: ${{ secrets.AZURE_CONTAINER_REGISTRY_USERNAME }}
         password: ${{ secrets.Azure_container_REGISTRY_PASSWORD }}
+    - name: Docker login to ACR
+      run: |
+        az acr login --name ${{ env.AZURE_CONTAINER_REGISTRY_LOGIN_SERVER }}
 
     - name: Docker build image
       run: |
