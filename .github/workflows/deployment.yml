@@ -9,7 +9,6 @@ on:
 env :
     secrets.AZURE_CONTAINER_REGISTRY_LOGIN_SERVER : "azurecontainer1.azurecr.io"
 
-
 jobs:
   build:
 
@@ -35,7 +34,7 @@ jobs:
 
     - name: Docker build image
       run: |
-        docker build -t ${{ secrets.AZURE_CONTAINER_REGISTRY_LOGIN_SERVER }}/myapp:latest
+        docker build -t ${{ secrets.AZURE_CONTAINER_REGISTRY_LOGIN_SERVER }}/myapp:latest .
     
     - name: Docker push Image to container
       run: |
