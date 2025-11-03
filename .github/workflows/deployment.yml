@@ -6,9 +6,6 @@ on:
   pull_request:
     branches: [ "J2EE" ]
 
-env :
-    secrets.AZURE_CONTAINER_REGISTRY_LOGIN_SERVER : "azurecontainer1.azurecr.io"
-
 
 jobs:
   build:
@@ -26,22 +23,35 @@ jobs:
     - name: Build with Maven
       run: mvn -B package --file pom.xml
 
-    - name: log in to azure container Registry
-      uses: azure/login@v1
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v4
       with:
-        login-server: ${{ secrets.AZURE_CONTAINER_REGISTRY_LOGIN_SERVER }}
-        username: ${{ secrets.AZURE_CONTAINER_REGISTRY_USERNAME }}
-        password: ${{ secrets.Azure_container_REGISTRY_PASSWORD }}
-    - name: Docker login to ACR
-      run: |
-        az acr login --name ${{ env.AZURE_CONTAINER_REGISTRY_LOGIN_SERVER }}
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ${{ secrets.AWS_REGION }}
+      
+    - name: Login to Amazon ECR
+      id: login-ecr
+      uses: aws-actions/amazon-ecr-login@v2
 
     - name: Docker build image
       run: |
-        docker build -t ${{ secrets.AZURE_CONTAINER_REGISTRY_LOGIN_SERVER }}/myapp:latest .
+        docker build -t ${{ secrets.ECR_REGISTRY }}/${{ secrets.ECR_REPOSITORY }}:latest .
     
     - name: Docker push Image to container
       run: |
-         docker push ${{ secrets.AZURE_CONTAINER_REGISTRY_LOGIN_SERVER }}/myapp:latest
+         docker push ${{ secrets.ECR_REGISTRY }}/${{ secrets.ECR_REPOSITORY }}:latest
+    
+    - name: Deploy to AWS EC2
+      uses: appleboy/ssh-action@v1.0.3
+      with:
+        host: ${{ secrets.EC2_HOST }}
+        username: ${{ secrets.EC2_USER }}
+        key: ${{ secrets.EC2_KEY }}
+        script: |
+          sudo docker pull ${{ secrets.ECR_REGISTRY }}/${{ secrets.ECR_REPOSITORY }}:latest
+          sudo docker stop myapp || true
+          sudo docker rm myapp || true
+          sudo docker run -d --name myapp -p 80:8080 ${{ secrets.ECR_REGISTRY }}/${{ secrets.ECR_REPOSITORY }}:latest
          
          
