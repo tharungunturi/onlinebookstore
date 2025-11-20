@@ -41,6 +41,7 @@ jobs:
         echo "ECR_REGISTRY = ${{ secrets.ECR_REGISTRY }}"
         echo "ECR_REPOSITORY = ${{ secrets.ECR_REPOSITORY }}"
 
+
     - name: Build Docker image
       run: |
         docker build -t ${{ secrets.ECR_REGISTRY }}/${{ secrets.ECR_REPOSITORY }}:latest .
